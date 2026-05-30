@@ -1,195 +1,108 @@
 // ==========================================
 // ESTADO GLOBAL
 // ==========================================
-
 let questions = [];
 let currentQuestion = 0;
 let userAnswers = [];
-
 let imageMap = {};
-
 let timerSeconds = 0;
 let timerInterval = null;
-
-const STORAGE_KEY =
-"simulador_v2_progresso";
+const STORAGE_KEY = "simulador_v2_progresso";
 
 // ==========================================
-// ELEMENTOS
+// ELEMENTOS (Certifique-se de que existem no HTML)
 // ==========================================
-
-const setupScreen =
-document.getElementById("setupScreen");
-
-const quizScreen =
-document.getElementById("quizScreen");
-
-const resultScreen =
-document.getElementById("resultScreen");
-
-const loadingOverlay =
-document.getElementById("loadingOverlay");
-
-const questionText =
-document.getElementById("questionText");
-
-const questionImage =
-document.getElementById("questionImage");
-
-const optionsContainer =
-document.getElementById("optionsContainer");
-
-const progressBar =
-document.getElementById("progressBar");
+const setupScreen = document.getElementById("setupScreen");
+const quizScreen = document.getElementById("quizScreen");
+const resultScreen = document.getElementById("resultScreen");
+const loadingOverlay = document.getElementById("loadingOverlay");
+const questionText = document.getElementById("questionText");
+const optionsContainer = document.getElementById("optionsContainer");
+const progressBar = document.getElementById("progressBar");
 
 // ==========================================
 // EVENTOS
 // ==========================================
-
-document
-.getElementById("startBtn")
-.addEventListener(
-    "click",
-    startSimulation
-);
-
-document
-.getElementById("nextBtn")
-.addEventListener(
-    "click",
-    nextQuestion
-);
-
-document
-.getElementById("prevBtn")
-.addEventListener(
-    "click",
-    previousQuestion
-);
-
-document
-.getElementById("restartBtn")
-.addEventListener(
-    "click",
-    ()=>location.reload()
-);
+document.getElementById("startBtn").addEventListener("click", startSimulation);
+document.getElementById("nextBtn").addEventListener("click", nextQuestion);
+document.getElementById("prevBtn").addEventListener("click", previousQuestion);
+document.getElementById("restartBtn").addEventListener("click", () => location.reload());
 
 // ==========================================
-// INICIAR
+// INICIAR - CORRIGIDO
 // ==========================================
-
 async function startSimulation() {
     const fileInput = document.getElementById("csvFile");
-    if (!fileInput || !fileInput.files[0]) {
+    if (!fileInput.files[0]) {
         alert("Por favor, selecione um arquivo CSV.");
         return;
     }
 
-    showLoading(true); // Ativa o loading
+    // 1. Mostra o loading imediatamente
+    showLoading(true);
 
-    try {
-        await loadImages();
-        loadCSV();
-    } catch (error) {
-        console.error("Erro na inicialização:", error);
-        showLoading(false); // Garante que o loading suma em caso de erro
-        alert("Ocorreu um erro ao iniciar: " + error.message);
-    }
+    // 2. Pequeno delay para garantir que o navegador renderize o spinner
+    setTimeout(async () => {
+        try {
+            await loadImages();
+            loadCSV();
+        } catch (error) {
+            console.error("Erro na inicialização:", error);
+            showLoading(false);
+            alert("Erro ao processar arquivos: " + error.message);
+        }
+    }, 100);
 }
 
 // ==========================================
 // LOADING
 // ==========================================
+function showLoading(show) {
+    if (show) {
+        loadingOverlay.classList.remove("hidden");
+    } else {
+        loadingOverlay.classList.add("hidden");
+    }
+}
 
+// ==========================================
+// CARREGA IMAGENS
+// ==========================================
+async function loadImages() {
+    imageMap = {};
+    const files = document.getElementById("imageFolder").files;
+    for (const file of files) {
+        imageMap[file.name] = URL.createObjectURL(file);
+    }
+}
+
+// ==========================================
+// CSV - CORRIGIDO (Proteção no erro)
+// ==========================================
 function loadCSV() {
     const file = document.getElementById("csvFile").files[0];
-    if (!file) {
-        alert("Selecione um arquivo CSV.");
-        showLoading(false);
-        return;
-    }
-
+    
     Papa.parse(file, {
         header: true,
         skipEmptyLines: true,
         encoding: "UTF-8",
         complete: function(result) {
             questions = result.data;
-            prepareQuestions(); // Esta função chama o startQuiz() internamente
+            if (questions.length === 0) {
+                alert("O arquivo CSV está vazio ou mal formatado.");
+                showLoading(false);
+                return;
+            }
+            prepareQuestions();
         },
         error: function(err) {
             console.error("Erro no PapaParse:", err);
-            showLoading(false); // <--- ISSO DESBLOQUEIA A TELA SE O ARQUIVO FALHAR
-            alert("Erro ao ler o CSV. Verifique a formatação.");
+            showLoading(false); // <--- ISSO VAI FECHAR O LOADING SE O CSV FALHAR
+            alert("Erro ao ler o CSV. Verifique se o formato está correto.");
         }
     });
 }
 
-// ==========================================
-// CARREGA IMAGENS
-// ==========================================
-
-async function loadImages(){
-
-    imageMap = {};
-
-    const files =
-    document
-    .getElementById(
-        "imageFolder"
-    )
-    .files;
-
-    for(const file of files){
-
-        imageMap[file.name] =
-        URL.createObjectURL(file);
-
-    }
-
-}
-
-// ==========================================
-// CSV
-// ==========================================
-
-function loadCSV(){
-
-    const file =
-    document
-    .getElementById(
-        "csvFile"
-    )
-    .files[0];
-
-    if(!file){
-
-        alert(
-            "Selecione um arquivo CSV."
-        );
-
-        showLoading(false);
-
-        return;
-    }
-
-Papa.parse(file, {
-    header: true,
-    skipEmptyLines: true,
-    encoding: "UTF-8",
-    complete: function(result) {
-        questions = result.data;
-        // ... (seu código de sucesso aqui)
-        showLoading(false); // Garante que fecha quando termina com sucesso
-    },
-    error: function(err) {
-        console.error("Erro no PapaParse:", err);
-        showLoading(false); // <--- ISSO É O QUE CORRIGE O TRAVAMENTO
-        alert("Erro ao ler o CSV. Verifique a formatação.");
-    }
-});
-
-}
 
 // ==========================================
 // PREPARAÇÃO
