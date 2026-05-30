@@ -1,16 +1,12 @@
-// =========================
-// ARQUIVO: app.js
-// VERSÃO CORRIGIDA E MELHORADA
-// =========================
-
 let questions = [];
 let currentQuestion = 0;
 let userAnswers = [];
 
+let imageMap = {};
+
 let seconds = 0;
 let timerInterval;
 
-// ELEMENTOS
 const startScreen = document.getElementById("start-screen");
 const quizScreen = document.getElementById("quiz-screen");
 const resultScreen = document.getElementById("result-screen");
@@ -24,440 +20,458 @@ const totalQuestions = document.getElementById("totalQuestions");
 
 const progressBar = document.getElementById("progressBar");
 
-// BOTÃO START
 document
 .getElementById("startBtn")
-.addEventListener("click", loadCSV);
+.addEventListener("click", startImport);
 
-// =========================
-// CARREGAR CSV
-// =========================
+async function startImport(){
+
+    await loadImages();
+
+    loadCSV();
+
+}
+
+async function loadImages(){
+
+    imageMap = {};
+
+    const files =
+    document.getElementById("imageFolder").files;
+
+    for(const file of files){
+
+        imageMap[file.name] =
+        URL.createObjectURL(file);
+
+    }
+
+}
 
 function loadCSV(){
 
-  const file =
-  document.getElementById("csvFile").files[0];
+    const file =
+    document.getElementById("csvFile").files[0];
 
-  if(!file){
+    if(!file){
 
-    alert("Selecione um arquivo CSV");
-    return;
-  }
-
-  Papa.parse(file,{
-
-    header:true,
-    skipEmptyLines:true,
-    encoding:"UTF-8",
-
-    complete:function(results){
-
-      questions = results.data;
-
-      // LIMITE
-      const limit =
-      parseInt(
-        document.getElementById("questionLimit").value
-      );
-
-      // EMBARALHAR
-      const shuffle =
-      document.getElementById("shuffleQuestions").checked;
-
-      if(shuffle){
-
-        questions =
-        questions.sort(() => Math.random() - 0.5);
-      }
-
-      // LIMITAR QUESTÕES
-      questions = questions.slice(0, limit);
-
-      totalQuestions.textContent =
-      questions.length;
-
-      startQuiz();
+        alert("Selecione um CSV");
+        return;
     }
 
-  });
+    Papa.parse(file,{
 
-}
+        header:true,
+        skipEmptyLines:true,
+        encoding:"UTF-8",
 
-// =========================
-// INICIAR QUIZ
-// =========================
+        complete:function(results){
 
-function startQuiz(){
+            questions = results.data;
 
-  startScreen.classList.add("hidden");
-  quizScreen.classList.remove("hidden");
+            const limit =
+            parseInt(
+                document.getElementById("questionLimit").value
+            );
 
-  startTimer();
+            const shuffle =
+            document.getElementById("shuffleQuestions").checked;
 
-  showQuestion();
-}
+            if(shuffle){
 
-// =========================
-// TIMER
-// =========================
+                questions =
+                questions.sort(
+                    ()=>Math.random()-0.5
+                );
 
-function startTimer(){
+            }
 
-  timerInterval = setInterval(() => {
+            questions =
+            questions.slice(0,limit);
 
-    seconds++;
+            totalQuestions.textContent =
+            questions.length;
 
-    const mins =
-    String(Math.floor(seconds / 60))
-    .padStart(2,'0');
+            startQuiz();
 
-    const secs =
-    String(seconds % 60)
-    .padStart(2,'0');
-
-    document.getElementById("timer")
-    .textContent = `${mins}:${secs}`;
-
-  },1000);
-
-}
-
-// =========================
-// MOSTRAR QUESTÃO
-// =========================
-
-function showQuestion(){
-
-  const q = questions[currentQuestion];
-
-  questionNumber.textContent =
-  currentQuestion + 1;
-
-  // PROGRESSO
-  const progress =
-  ((currentQuestion + 1) / questions.length) * 100;
-
-  progressBar.style.width =
-  progress + "%";
-
-  // TEXTO DA QUESTÃO
-  questionText.innerHTML =
-  q.pergunta || "";
-
-  // IMAGEM DA QUESTÃO
-  if(q.imagem_pergunta &&
-     q.imagem_pergunta.trim() !== ""){
-
-    questionImage.src =
-    q.imagem_pergunta;
-
-    questionImage.classList.remove("hidden");
-
-  }else{
-
-    questionImage.classList.add("hidden");
-  }
-
-  // LIMPA OPÇÕES
-  optionsContainer.innerHTML = "";
-
-  // TIPO
-  const questionType =
-  (q.tipo || "single")
-  .trim()
-  .toLowerCase();
-
-  const options = ["a","b","c","d"];
-
-  options.forEach(letter => {
-
-    const optionText =
-    q[`alt_${letter}`] || "";
-
-    const optionImage =
-    q[`img_${letter}`] || "";
-
-    // CRIA DIV
-    const div =
-    document.createElement("div");
-
-    div.classList.add("option");
-
-    // INPUT
-    const input =
-    document.createElement("input");
-
-    input.type =
-    questionType === "multiple"
-    ? "checkbox"
-    : "radio";
-
-    input.name = "questionOption";
-
-    input.value =
-    letter.toUpperCase();
-
-    // VERIFICA SE ESTÁ MARCADA
-    const savedAnswer =
-    userAnswers[currentQuestion] || [];
-
-    if(savedAnswer.includes(letter.toUpperCase())){
-
-      input.checked = true;
-
-      div.classList.add("selected");
-    }
-
-    // EVENTO
-    input.addEventListener("change", () => {
-
-      saveAnswer(
-        letter.toUpperCase(),
-        questionType
-      );
+        }
 
     });
 
-    // LABEL
-    const label =
-    document.createElement("label");
+}
 
-    label.innerHTML = `
-      <strong>${letter.toUpperCase()})</strong>
-      ${optionText}
-      ${
-        optionImage
-        ? `<img src="${optionImage}">`
-        : ""
-      }
-    `;
+function startQuiz(){
 
-    div.appendChild(input);
-    div.appendChild(label);
+    startScreen.classList.add("hidden");
+    quizScreen.classList.remove("hidden");
 
-    optionsContainer.appendChild(div);
+    startTimer();
 
-  });
+    showQuestion();
 
 }
 
-// =========================
-// SALVAR RESPOSTA
-// =========================
+function startTimer(){
 
-function saveAnswer(answer, questionType){
+    timerInterval = setInterval(()=>{
 
-  // MULTIPLE
-  if(questionType === "multiple"){
+        seconds++;
 
-    if(!Array.isArray(userAnswers[currentQuestion])){
+        const mins =
+        String(
+            Math.floor(seconds/60)
+        ).padStart(2,"0");
 
-      userAnswers[currentQuestion] = [];
-    }
+        const secs =
+        String(
+            seconds%60
+        ).padStart(2,"0");
 
-    const answers =
-    userAnswers[currentQuestion];
+        document
+        .getElementById("timer")
+        .textContent =
+        `${mins}:${secs}`;
 
-    // ADICIONA
-    if(answers.includes(answer)){
+    },1000);
 
-      userAnswers[currentQuestion] =
-      answers.filter(a => a !== answer);
+}
+
+function showQuestion(){
+
+    const q =
+    questions[currentQuestion];
+
+    questionNumber.textContent =
+    currentQuestion + 1;
+
+    progressBar.style.width =
+    (
+        (currentQuestion+1)
+        /
+        questions.length
+    )*100 + "%";
+
+    questionText.innerHTML =
+    q.pergunta || "";
+
+    if(
+        q.imagem_pergunta &&
+        imageMap[q.imagem_pergunta]
+    ){
+
+        questionImage.src =
+        imageMap[q.imagem_pergunta];
+
+        questionImage.classList.remove(
+            "hidden"
+        );
 
     }else{
 
-      answers.push(answer);
+        questionImage.classList.add(
+            "hidden"
+        );
+
     }
 
-  }
+    optionsContainer.innerHTML = "";
 
-  // SINGLE
-  else{
+    const type =
+    (q.tipo || "single")
+    .toLowerCase();
 
-    userAnswers[currentQuestion] = [answer];
-  }
+    const letters =
+    ["a","b","c","d","e"];
 
-  showQuestion();
+    letters.forEach(letter=>{
+
+        const optionText =
+        q[`alt_${letter}`];
+
+        const optionImage =
+        q[`img_${letter}`];
+
+        if(
+            !optionText &&
+            !optionImage
+        ){
+            return;
+        }
+
+        const div =
+        document.createElement("div");
+
+        div.classList.add("option");
+
+        const input =
+        document.createElement("input");
+
+        input.type =
+        type === "multiple"
+        ? "checkbox"
+        : "radio";
+
+        input.name =
+        "questionOption";
+
+        input.value =
+        letter.toUpperCase();
+
+        const saved =
+        userAnswers[currentQuestion]
+        || [];
+
+        if(
+            saved.includes(
+                letter.toUpperCase()
+            )
+        ){
+
+            input.checked = true;
+
+        }
+
+        input.addEventListener(
+            "change",
+            ()=>{
+                saveAnswer(
+                    letter.toUpperCase(),
+                    type
+                );
+            }
+        );
+
+        let html = `
+        <strong>
+        ${letter.toUpperCase()})
+        </strong>
+        ${optionText || ""}
+        `;
+
+        if(
+            optionImage &&
+            imageMap[optionImage]
+        ){
+
+            html += `
+            <br>
+            <img
+            src="${imageMap[optionImage]}"
+            style="max-width:300px;">
+            `;
+
+        }
+
+        div.appendChild(input);
+
+        const span =
+        document.createElement("span");
+
+        span.innerHTML = html;
+
+        div.appendChild(span);
+
+        optionsContainer.appendChild(div);
+
+    });
 
 }
 
-// =========================
-// BOTÃO NEXT
-// =========================
+function saveAnswer(answer,type){
+
+    if(type==="multiple"){
+
+        if(
+            !Array.isArray(
+                userAnswers[currentQuestion]
+            )
+        ){
+
+            userAnswers[currentQuestion]=[];
+
+        }
+
+        const arr =
+        userAnswers[currentQuestion];
+
+        if(arr.includes(answer)){
+
+            userAnswers[currentQuestion] =
+            arr.filter(
+                a=>a!==answer
+            );
+
+        }else{
+
+            arr.push(answer);
+
+        }
+
+    }else{
+
+        userAnswers[currentQuestion] =
+        [answer];
+
+    }
+
+}
 
 document
 .getElementById("nextBtn")
-.addEventListener("click", () => {
+.addEventListener("click",()=>{
 
-  if(currentQuestion < questions.length - 1){
+    if(
+        currentQuestion <
+        questions.length-1
+    ){
 
-    currentQuestion++;
+        currentQuestion++;
 
-    showQuestion();
+        showQuestion();
 
-  }else{
+    }else{
 
-    finishQuiz();
-  }
+        finishQuiz();
+
+    }
 
 });
-
-// =========================
-// BOTÃO PREV
-// =========================
 
 document
 .getElementById("prevBtn")
-.addEventListener("click", () => {
+.addEventListener("click",()=>{
 
-  if(currentQuestion > 0){
+    if(currentQuestion>0){
 
-    currentQuestion--;
+        currentQuestion--;
 
-    showQuestion();
-  }
+        showQuestion();
+
+    }
 
 });
 
-// =========================
-// NORMALIZAR RESPOSTA
-// =========================
-
 function normalizeAnswer(answer){
 
-  if(!answer) return [];
+    if(!answer) return [];
 
-  return answer
-    .replace(/"/g,'')
-    .replace(/\s/g,'')
-    .toUpperCase()
-    .split(',')
-    .sort();
+    return answer
+        .replace(/"/g,"")
+        .replace(/\s/g,"")
+        .toUpperCase()
+        .split(",")
+        .sort();
 
 }
-
-// =========================
-// COMPARAR ARRAYS
-// =========================
 
 function arraysEqual(a,b){
 
-  if(a.length !== b.length)
-    return false;
+    if(a.length!==b.length)
+        return false;
 
-  for(let i=0;i<a.length;i++){
+    for(let i=0;i<a.length;i++){
 
-    if(a[i] !== b[i])
-      return false;
-  }
+        if(a[i]!==b[i])
+            return false;
 
-  return true;
+    }
+
+    return true;
+
 }
-
-// =========================
-// FINALIZAR QUIZ
-// =========================
 
 function finishQuiz(){
 
-  clearInterval(timerInterval);
+    clearInterval(timerInterval);
 
-  quizScreen.classList.add("hidden");
-  resultScreen.classList.remove("hidden");
+    quizScreen.classList.add("hidden");
+    resultScreen.classList.remove("hidden");
 
-  let correct = 0;
+    let correct = 0;
 
-  const reviewContainer =
-  document.getElementById("reviewContainer");
-
-  reviewContainer.innerHTML = "";
-
-  questions.forEach((q,index) => {
-
-    // RESPOSTA USUÁRIO
-    const user =
-    userAnswers[index] || [];
-
-    // RESPOSTA CORRETA
-    const correctAnswer =
-    normalizeAnswer(q.correta);
-
-    // ORDENA
-    const normalizedUser =
-    [...user].sort();
-
-    // COMPARA
-    const isCorrect =
-    arraysEqual(
-      normalizedUser,
-      correctAnswer
+    const review =
+    document.getElementById(
+        "reviewContainer"
     );
 
-    // ACERTO
-    if(isCorrect){
+    review.innerHTML = "";
 
-      correct++;
-    }
+    questions.forEach((q,index)=>{
 
-    // ERRO
-    else{
+        const user =
+        userAnswers[index] || [];
 
-      const div =
-      document.createElement("div");
+        const right =
+        normalizeAnswer(
+            q.correta
+        );
 
-      div.classList.add("review-item");
+        const userSorted =
+        [...user].sort();
 
-      div.innerHTML = `
+        const ok =
+        arraysEqual(
+            userSorted,
+            right
+        );
 
-        <h3>
-          Questão ${index + 1}
-        </h3>
+        if(ok){
 
-        <p class="user-answer">
-          Sua resposta:
-          ${
-            user.length
-            ? user.join(", ")
-            : "Não respondida"
-          }
-        </p>
+            correct++;
 
-        <p class="correct-answer">
-          Resposta correta:
-          ${correctAnswer.join(", ")}
-        </p>
+        }else{
 
-        <div class="feedback">
-          ${q.feedback || ""}
-        </div>
+            review.innerHTML += `
+            <div class="review-item">
 
-      `;
+            <h3>
+            Questão ${index+1}
+            </h3>
 
-      reviewContainer.appendChild(div);
+            <p>
+            Sua resposta:
+            ${user.join(", ")}
+            </p>
 
-    }
+            <p>
+            Correta:
+            ${right.join(", ")}
+            </p>
 
-  });
+            <p>
+            ${q.feedback || ""}
+            </p>
 
-  // RESULTADOS
-  const wrong =
-  questions.length - correct;
+            </div>
+            `;
+        }
 
-  const percent =
-  Math.round(
-    (correct / questions.length) * 100
-  );
+    });
 
-  document
-  .getElementById("correctCount")
-  .textContent = correct;
+    const wrong =
+    questions.length - correct;
 
-  document
-  .getElementById("wrongCount")
-  .textContent = wrong;
+    const percent =
+    Math.round(
+        correct
+        /
+        questions.length
+        *100
+    );
 
-  document
-  .getElementById("scorePercent")
-  .textContent = percent + "%";
+    document
+    .getElementById("correctCount")
+    .textContent =
+    correct;
+
+    document
+    .getElementById("wrongCount")
+    .textContent =
+    wrong;
+
+    document
+    .getElementById("scorePercent")
+    .textContent =
+    percent + "%";
 
 }
