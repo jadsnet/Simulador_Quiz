@@ -1,7 +1,9 @@
 /* ==========================================
    REVIEW
 ========================================== */
-
+.hidden {
+    display: none !important;
+}
 .review-item {
 
     background: #0f172a;
