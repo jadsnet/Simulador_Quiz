@@ -2,79 +2,163 @@
 <html lang="pt-BR">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Provas</title>
+
+    <title>Simulador Online</title>
 
     <link rel="stylesheet" href="style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
 </head>
 
 <body>
 
 <div class="container">
 
+    <!-- HEADER -->
+
     <header>
+
         <h1>Simulador Online</h1>
-        <p>Importe seu CSV e sua pasta de imagens</p>
+
+        <p>
+            Sistema de Testes e Certificações
+        </p>
+
     </header>
+
+    <!-- TELA INICIAL -->
 
     <section id="start-screen" class="card">
 
-        <h2>Importação</h2>
+        <h2>Importação de Questões</h2>
 
-        <label>Arquivo CSV</label>
-        <input type="file" id="csvFile" accept=".csv">
+        <div class="form-group">
 
-        <br><br>
+            <label>
+                Arquivo CSV
+            </label>
 
-        <label>Pasta de Imagens</label>
-        <input
-            type="file"
-            id="imageFolder"
-            webkitdirectory
-            directory
-            multiple>
-
-        <br><br>
-
-        <label>
-            Quantidade de questões:
-        </label>
-
-        <input
-            type="number"
-            id="questionLimit"
-            value="50">
-
-        <br><br>
-
-        <label>
             <input
-                type="checkbox"
-                id="shuffleQuestions"
-                checked>
-            Embaralhar questões
-        </label>
+                type="file"
+                id="csvFile"
+                accept=".csv">
 
-        <br><br>
+        </div>
+
+        <div class="form-group">
+
+            <label>
+                Pasta de Imagens
+            </label>
+
+            <input
+                type="file"
+                id="imageFolder"
+                webkitdirectory
+                directory
+                multiple>
+
+        </div>
+
+        <div class="settings-grid">
+
+            <div>
+
+                <label>
+                    Quantidade de Questões
+                </label>
+
+                <input
+                    type="number"
+                    id="questionLimit"
+                    value="50"
+                    min="1">
+
+            </div>
+
+            <div>
+
+                <label>
+                    Tempo Limite (min)
+                </label>
+
+                <input
+                    type="number"
+                    id="timeLimit"
+                    value="0"
+                    min="0">
+
+            </div>
+
+        </div>
+
+        <div class="checkbox-group">
+
+            <label>
+
+                <input
+                    type="checkbox"
+                    id="shuffleQuestions"
+                    checked>
+
+                Embaralhar Questões
+
+            </label>
+
+        </div>
 
         <button id="startBtn">
             Iniciar Simulado
         </button>
 
+        <div class="csv-help">
+
+            <h3>
+                Estrutura CSV
+            </h3>
+
+<pre>
+id,tipo,pergunta,imagem_pergunta,
+alt_a,img_a,
+alt_b,img_b,
+alt_c,img_c,
+alt_d,img_d,
+alt_e,img_e,
+correta,feedback
+</pre>
+
+        </div>
+
     </section>
 
-    <section id="quiz-screen" class="hidden">
+    <!-- QUIZ -->
+
+    <section
+        id="quiz-screen"
+        class="hidden">
+
+        <!-- TOPO -->
 
         <div class="top-bar">
 
             <div>
+
                 Questão
-                <span id="questionNumber"></span>
+
+                <span id="questionNumber">
+                    1
+                </span>
+
                 /
-                <span id="totalQuestions"></span>
+
+                <span id="totalQuestions">
+                    0
+                </span>
+
             </div>
 
             <div id="timer">
@@ -83,11 +167,25 @@
 
         </div>
 
+        <!-- PROGRESSO -->
+
         <div class="progress-container">
-            <div id="progressBar" class="progress-bar"></div>
+
+            <div
+                id="progressBar"
+                class="progress-bar">
+            </div>
+
         </div>
 
-        <div class="card">
+        <!-- CARD QUESTÃO -->
+
+        <div class="card question-card">
+
+            <div
+                id="questionCategory"
+                class="category-badge hidden">
+            </div>
 
             <h2 id="questionText"></h2>
 
@@ -95,16 +193,26 @@
                 id="questionImage"
                 class="question-image hidden">
 
-            <div id="optionsContainer"></div>
+            <div
+                id="multipleAlert"
+                class="multiple-alert hidden">
+
+                Esta questão possui mais de uma resposta correta.
+
+            </div>
+
+            <div
+                id="optionsContainer">
+            </div>
 
             <div class="navigation">
 
                 <button id="prevBtn">
-                    Anterior
+                    ← Anterior
                 </button>
 
                 <button id="nextBtn">
-                    Próxima
+                    Próxima →
                 </button>
 
             </div>
@@ -113,30 +221,85 @@
 
     </section>
 
-    <section id="result-screen" class="hidden">
+    <!-- RESULTADO -->
 
-        <div class="card">
+    <section
+        id="result-screen"
+        class="hidden">
 
-            <h2>Resultado Final</h2>
+        <div class="card result-card">
 
-            <h3>
-                Acertos:
-                <span id="correctCount"></span>
-            </h3>
+            <h2>
+                Resultado Final
+            </h2>
 
-            <h3>
-                Erros:
-                <span id="wrongCount"></span>
-            </h3>
+            <div class="stats">
 
-            <h3>
-                Aproveitamento:
-                <span id="scorePercent"></span>
-            </h3>
+                <div class="stat success">
 
-            <br>
+                    <h3 id="correctCount">
+                        0
+                    </h3>
 
-            <div id="reviewContainer"></div>
+                    <p>
+                        Acertos
+                    </p>
+
+                </div>
+
+                <div class="stat error">
+
+                    <h3 id="wrongCount">
+                        0
+                    </h3>
+
+                    <p>
+                        Erros
+                    </p>
+
+                </div>
+
+                <div class="stat info">
+
+                    <h3 id="scorePercent">
+                        0%
+                    </h3>
+
+                    <p>
+                        Desempenho
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="result-actions">
+
+                <button id="showOnlyErrors">
+
+                    Mostrar Apenas Erros
+
+                </button>
+
+                <button id="showAllReview">
+
+                    Mostrar Tudo
+
+                </button>
+
+            </div>
+
+            <div id="reviewContainer">
+
+            </div>
+
+            <button
+                class="restart-btn"
+                onclick="location.reload()">
+
+                Novo Simulado
+
+            </button>
 
         </div>
 
@@ -144,7 +307,26 @@
 
 </div>
 
+<!-- LOADING -->
+
+<div
+    id="loadingOverlay"
+    class="loading-overlay hidden">
+
+    <div class="loader-card">
+
+        <div class="spinner"></div>
+
+        <p>
+            Carregando questões...
+        </p>
+
+    </div>
+
+</div>
+
 <script src="app.js"></script>
 
 </body>
+
 </html>
