@@ -492,3 +492,58 @@ input[type="checkbox"] {
     height: 18px;
     accent-color: var(--primary);
 }
+
+/* ===== VISUAL PROFISSIONAL ===== */
+.card{
+backdrop-filter:blur(12px);
+box-shadow:0 10px 30px rgba(0,0,0,.35);
+border:1px solid rgba(255,255,255,.06);
+}
+
+.custom-file-btn{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+padding:12px 20px;
+border-radius:12px;
+background:linear-gradient(135deg,#3b82f6,#2563eb);
+color:#fff;
+font-weight:700;
+cursor:pointer;
+transition:.25s;
+}
+
+.custom-file-btn:hover{
+transform:translateY(-2px);
+box-shadow:0 8px 20px rgba(59,130,246,.35);
+}
+
+.form-group span{
+margin-top:6px;
+font-size:13px;
+color:#94a3b8;
+}
+
+input[type="number"]{
+font-weight:600;
+}
+
+.btn-primary{
+background:linear-gradient(135deg,#3b82f6,#2563eb);
+}
+
+.btn{
+transition:.25s;
+}
+
+.btn:hover{
+transform:translateY(-2px);
+}
+
+.option{
+transition:all .25s ease;
+}
+
+.option:hover{
+transform:translateX(4px);
+}
