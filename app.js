@@ -78,14 +78,23 @@ document
 // INICIAR
 // ==========================================
 
-async function startSimulation(){
+async function startSimulation() {
+    const fileInput = document.getElementById("csvFile");
+    if (!fileInput || !fileInput.files[0]) {
+        alert("Por favor, selecione um arquivo CSV.");
+        return;
+    }
 
-    showLoading(true);
+    showLoading(true); // Ativa o loading
 
-    await loadImages();
-
-    loadCSV();
-
+    try {
+        await loadImages();
+        loadCSV();
+    } catch (error) {
+        console.error("Erro na inicialização:", error);
+        showLoading(false); // FORÇA o fechamento do loading se der erro
+        alert("Erro ao processar: " + error.message);
+    }
 }
 
 // ==========================================
