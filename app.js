@@ -21,6 +21,7 @@ const loadingOverlay = document.getElementById("loadingOverlay");
 const questionText = document.getElementById("questionText");
 const optionsContainer = document.getElementById("optionsContainer");
 const progressBar = document.getElementById("progressBar");
+const questionImage = document.getElementById("questionImage");
 
 // ==========================================
 // EVENTOS
