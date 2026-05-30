@@ -1,68 +1,91 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Certificação</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Certificação</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 </head>
 <body>
 
-    <div id="loadingOverlay" class="loading-overlay hidden">
-        <div class="loading-card">
-            <div class="spinner"></div>
-            <p>Carregando questões...</p>
-        </div>
-    </div>
+<div id="loadingOverlay" class="loading-overlay hidden">
+  <div class="loading-card"><div class="spinner"></div><p>Carregando questões...</p></div>
+</div>
 
-    <div id="imageModal" class="image-modal">
-        <img id="modalImage" src="" alt="">
-    </div>
+<div id="imageModal" class="image-modal"><img id="modalImage"></div>
 
-    <div class="app-container">
-        <header class="main-header">
-            <h1>Simulador Online</h1>
-            <p>Sistema de Testes e Certificações</p>
-        </header>
+<div class="app-container">
+<header class="main-header">
+<h1>Simulador de Certificação</h1>
+<p>Importe o CSV e inicie o simulado</p>
+</header>
 
-        <section id="setupScreen" class="screen">
-            <div class="card">
-                <h2>Configuração do Simulado</h2>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Arquivo CSV</label>
-                        <input type="file" id="csvFile" accept=".csv">
-                    </div>
-                    <div class="form-group">
-                        <label>Pasta de Imagens</label>
-                        <input type="file" id="imageFolder" webkitdirectory directory multiple>
-                    </div>
-                </div>
-                <button id="startBtn" class="btn btn-primary">Iniciar Simulado</button>
-            </div>
-        </section>
+<section id="setupScreen" class="screen">
+<div class="card">
+<h2>Configuração</h2>
+<div class="form-grid">
+<div class="form-group">
+<label>Arquivo CSV</label>
+<input type="file" id="csvFile" accept=".csv">
+</div>
+<div class="form-group">
+<label>Pasta de imagens</label>
+<input type="file" id="imageFolder" webkitdirectory directory multiple>
+</div>
+</div>
 
-        <section id="quizScreen" class="screen hidden">
-            <div class="card question-card">
-                <h2 id="questionText"></h2>
-                <div id="optionsContainer"></div>
-            </div>
-            <div class="navigation">
-                <button id="prevBtn" class="btn">← Anterior</button>
-                <button id="nextBtn" class="btn btn-primary">Próxima →</button>
-            </div>
-        </section>
+<div class="form-grid">
+<div class="form-group">
+<label>Quantidade de questões</label>
+<input type="number" id="questionLimit" value="50" min="1">
+</div>
+<div class="form-group">
+<label><input type="checkbox" id="shuffleQuestions" checked> Embaralhar questões</label>
+<label><input type="checkbox" id="shuffleAnswers" checked> Embaralhar alternativas</label>
+</div>
+</div>
 
-        <section id="resultScreen" class="screen hidden">
-            <div class="card">
-                <h2>Resultado Final</h2>
-                <div id="reviewContainer"></div>
-                <button id="restartBtn" class="btn btn-primary">Novo Simulado</button>
-            </div>
-        </section>
-    </div>
+<button id="startBtn" class="btn btn-primary">Iniciar Simulado</button>
+</div>
+</section>
 
-    <script src="app.js"></script>
+<section id="quizScreen" class="screen hidden">
+<div class="dashboard">
+<div>Questão: <span id="currentQuestion">1</span>/<span id="totalQuestions">0</span></div>
+<div>Respondidas: <span id="answeredCount">0</span></div>
+<div>Tempo: <span id="timer">00:00</span></div>
+</div>
+
+<div class="progress"><div id="progressBar"></div></div>
+
+<div class="card">
+<span id="questionCategory" class="badge hidden"></span>
+<h2 id="questionText"></h2>
+<img id="questionImage" class="question-image hidden">
+<div id="multipleAlert" class="hidden">Questão de múltipla seleção.</div>
+<div id="optionsContainer"></div>
+</div>
+
+<div class="navigation">
+<button id="prevBtn" class="btn">Anterior</button>
+<button id="nextBtn" class="btn btn-primary">Próxima</button>
+</div>
+</section>
+
+<section id="resultScreen" class="screen hidden">
+<div class="card">
+<h2>Resultado Final</h2>
+<p>Acertos: <span id="correctCount">0</span></p>
+<p>Erros: <span id="wrongCount">0</span></p>
+<p>Aproveitamento: <span id="scorePercent">0%</span></p>
+<button id="showOnlyErrors" class="btn">Somente erros</button>
+<button id="showAllReview" class="btn">Mostrar tudo</button>
+<div id="reviewContainer"></div>
+<button id="restartBtn" class="btn btn-primary">Novo Simulado</button>
+</div>
+</section>
+</div>
+<script src="app.js"></script>
 </body>
 </html>
