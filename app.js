@@ -167,34 +167,21 @@ function loadCSV(){
         return;
     }
 
-    Papa.parse(file,{
-
-        header:true,
-
-        skipEmptyLines:true,
-
-        encoding:"UTF-8",
-
-        complete:function(result){
-
-            questions =
-            result.data;
-
-            prepareQuestions();
-
-        },
-
-        error:function(){
-
-            alert(
-                "Erro ao importar CSV."
-            );
-
-            showLoading(false);
-
-        }
-
-    });
+Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    encoding: "UTF-8",
+    complete: function(result) {
+        questions = result.data;
+        // ... (seu código de sucesso aqui)
+        showLoading(false); // Garante que fecha quando termina com sucesso
+    },
+    error: function(err) {
+        console.error("Erro no PapaParse:", err);
+        showLoading(false); // <--- ISSO É O QUE CORRIGE O TRAVAMENTO
+        alert("Erro ao ler o CSV. Verifique a formatação.");
+    }
+});
 
 }
 
