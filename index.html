@@ -1,0 +1,138 @@
+<!-- =========================
+ARQUIVO: index.html
+========================= -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulador de Provas</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- PapaParse CSV -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Simulador Online</h1>
+    <p>Importe seu CSV e realize testes online</p>
+  </header>
+
+  <!-- TELA INICIAL -->
+  <section id="start-screen" class="card">
+
+    <h2>Importar Questões CSV</h2>
+
+    <input type="file" id="csvFile" accept=".csv">
+
+    <div class="settings">
+
+      <label>
+        Quantidade de questões:
+        <input type="number" id="questionLimit" value="20">
+      </label>
+
+      <label>
+        Embaralhar questões
+        <input type="checkbox" id="shuffleQuestions" checked>
+      </label>
+
+    </div>
+
+    <button id="startBtn">Iniciar Simulado</button>
+
+    <div class="csv-info">
+      <h3>Formato do CSV</h3>
+
+<pre>
+id,pergunta,imagem_pergunta,alt_a,img_a,alt_b,img_b,alt_c,img_c,alt_d,img_d,correta,feedback
+</pre>
+    </div>
+
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz-screen" class="hidden">
+
+    <div class="top-bar">
+
+      <div>
+        Questão
+        <span id="questionNumber">1</span>
+        /
+        <span id="totalQuestions">20</span>
+      </div>
+
+      <div id="timer">
+        00:00
+      </div>
+
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="card question-card">
+
+      <h2 id="questionText"></h2>
+
+      <img id="questionImage" class="question-image hidden">
+
+      <div id="optionsContainer"></div>
+
+      <div class="navigation">
+        <button id="prevBtn">Anterior</button>
+        <button id="nextBtn">Próxima</button>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- RESULTADO -->
+  <section id="result-screen" class="hidden">
+
+    <div class="card result-card">
+
+      <h2>Resultado Final</h2>
+
+      <div class="stats">
+
+        <div class="stat success">
+          <h3 id="correctCount">0</h3>
+          <p>Acertos</p>
+        </div>
+
+        <div class="stat error">
+          <h3 id="wrongCount">0</h3>
+          <p>Erros</p>
+        </div>
+
+        <div class="stat info">
+          <h3 id="scorePercent">0%</h3>
+          <p>Desempenho</p>
+        </div>
+
+      </div>
+
+      <div id="reviewContainer"></div>
+
+      <button onclick="location.reload()">
+        Novo Simulado
+      </button>
+
+    </div>
+
+  </section>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
