@@ -243,3 +243,41 @@ body {
 .hidden {
     display: none !important;
 }
+/* Correção do layout do formulário */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: bold;
+    color: var(--text-secondary);
+}
+
+.card {
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background: #334155;
+    color: white;
+}
+
+.btn-primary {
+    background: #3b82f6;
+}
