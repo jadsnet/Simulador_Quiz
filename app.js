@@ -92,8 +92,8 @@ async function startSimulation() {
         loadCSV();
     } catch (error) {
         console.error("Erro na inicialização:", error);
-        showLoading(false); // FORÇA o fechamento do loading se der erro
-        alert("Erro ao processar: " + error.message);
+        showLoading(false); // Garante que o loading suma em caso de erro
+        alert("Ocorreu um erro ao iniciar: " + error.message);
     }
 }
 
@@ -101,22 +101,28 @@ async function startSimulation() {
 // LOADING
 // ==========================================
 
-function showLoading(show){
-
-    if(show){
-
-        loadingOverlay
-        .classList
-        .remove("hidden");
-
-    }else{
-
-        loadingOverlay
-        .classList
-        .add("hidden");
-
+function loadCSV() {
+    const file = document.getElementById("csvFile").files[0];
+    if (!file) {
+        alert("Selecione um arquivo CSV.");
+        showLoading(false);
+        return;
     }
 
+    Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        encoding: "UTF-8",
+        complete: function(result) {
+            questions = result.data;
+            prepareQuestions(); // Esta função chama o startQuiz() internamente
+        },
+        error: function(err) {
+            console.error("Erro no PapaParse:", err);
+            showLoading(false); // <--- ISSO DESBLOQUEIA A TELA SE O ARQUIVO FALHAR
+            alert("Erro ao ler o CSV. Verifique a formatação.");
+        }
+    });
 }
 
 // ==========================================
