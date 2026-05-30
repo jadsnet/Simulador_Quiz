@@ -110,48 +110,26 @@ function loadCSV() {
 // PREPARAÇÃO
 // ==========================================
 
-function prepareQuestions(){
+function prepareQuestions() {
+    const limitInput = document.getElementById("questionLimit");
+    const shuffleInput = document.getElementById("shuffleQuestions");
 
-    const limit =
-    parseInt(
-        document
-        .getElementById(
-            "questionLimit"
-        )
-        .value
-    );
+    // Define valores padrão se os campos não existirem
+    const limit = limitInput ? parseInt(limitInput.value) : 50;
+    const shuffle = shuffleInput ? shuffleInput.checked : true;
 
-    const shuffle =
-    document
-    .getElementById(
-        "shuffleQuestions"
-    )
-    .checked;
-
-    if(shuffle){
-
-        questions =
-        questions.sort(
-            ()=>Math.random()-0.5
-        );
-
+    if (shuffle) {
+        questions = questions.sort(() => Math.random() - 0.5);
     }
 
-    questions =
-    questions.slice(
-        0,
-        limit
-    );
+    questions = questions.slice(0, limit);
 
-    document
-    .getElementById(
-        "totalQuestions"
-    )
-    .textContent =
-    questions.length;
+    const totalEl = document.getElementById("totalQuestions");
+    if (totalEl) {
+        totalEl.textContent = questions.length;
+    }
 
     startQuiz();
-
 }
 
 // ==========================================
