@@ -493,57 +493,74 @@ input[type="checkbox"] {
     accent-color: var(--primary);
 }
 
-/* ===== VISUAL PROFISSIONAL ===== */
+/* ===== TEMA PREMIUM ===== */
+.app-container{
+ max-width:1200px;
+}
+
 .card{
-backdrop-filter:blur(12px);
-box-shadow:0 10px 30px rgba(0,0,0,.35);
-border:1px solid rgba(255,255,255,.06);
-}
-
-.custom-file-btn{
-display:inline-flex;
-align-items:center;
-justify-content:center;
-padding:12px 20px;
-border-radius:12px;
-background:linear-gradient(135deg,#3b82f6,#2563eb);
-color:#fff;
-font-weight:700;
-cursor:pointer;
-transition:.25s;
-}
-
-.custom-file-btn:hover{
-transform:translateY(-2px);
-box-shadow:0 8px 20px rgba(59,130,246,.35);
-}
-
-.form-group span{
-margin-top:6px;
-font-size:13px;
-color:#94a3b8;
-}
-
-input[type="number"]{
-font-weight:600;
-}
-
-.btn-primary{
-background:linear-gradient(135deg,#3b82f6,#2563eb);
+ border:1px solid rgba(255,255,255,.08);
+ backdrop-filter:blur(12px);
+ box-shadow:0 12px 40px rgba(0,0,0,.35);
+ border-radius:22px;
 }
 
 .btn{
-transition:.25s;
+ transition:all .25s ease;
+ font-weight:600;
 }
 
 .btn:hover{
-transform:translateY(-2px);
+ transform:translateY(-2px);
+ box-shadow:0 10px 20px rgba(0,0,0,.25);
+}
+
+.btn-primary{
+ background:linear-gradient(135deg,#3b82f6,#2563eb);
+}
+
+.dashboard{
+ gap:20px;
+}
+
+.dashboard > div{
+ border-radius:18px;
+ box-shadow:0 8px 24px rgba(0,0,0,.2);
+}
+
+.form-grid{
+ gap:40px !important;
+}
+
+.custom-file-btn{
+ min-width:190px;
+ border-radius:14px;
+ background:linear-gradient(135deg,#3b82f6,#2563eb);
+}
+
+.custom-file-btn:hover{
+ transform:translateY(-2px);
 }
 
 .option{
-transition:all .25s ease;
+ border-radius:16px;
+ transition:all .2s ease;
 }
 
 .option:hover{
-transform:translateX(4px);
+ transform:translateX(4px);
+}
+
+#showOnlyErrors{
+ margin-right:12px;
+}
+
+#showOnlyErrors,
+#showAllReview{
+ margin-top:15px;
+ margin-bottom:25px;
+}
+
+.review-item{
+ margin-top:10px;
 }
